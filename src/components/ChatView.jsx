@@ -1,9 +1,24 @@
 import { useEffect, useRef, useState } from 'react';
 import { getChatResponse } from '../services/groqApi';
 
-const SYSTEM_PROMPT = 'You are a helpful cooking assistant.\nKeep answers SHORT and clear.\nUse bullet points when possible.\nAvoid long paragraphs.\nBe concise.\nUse simple language.\n\nFormat rules:\n- max 4-6 points\n- short sentences\n- easy steps\n- no long explanations';
+const SYSTEM_PROMPT = [
+  'You are a helpful cooking assistant.',
+  'Answer directly and stay relevant to the question.',
+  'Do not start replies with filler like "Here is your meal idea".',
+  'If the user mentions hostel/dorm/student/budget, prioritize low-cost, minimal equipment, and common pantry ingredients.',
+  'Avoid expensive or rare items unless the user asks for them.',
+  'Be accurate and realistic: do not invent ingredients, steps, or claims.',
+  'If the request is unclear or missing key details (budget, equipment, servings), ask 1-2 short clarifying questions.',
+  'Adapt the format to the request:',
+  '- If the user asks for a table or comparison, return a markdown table.',
+  '- If the user asks for steps or instructions, use numbered steps.',
+  '- If the user asks for a list, use short bullet points, one item per line.',
+  '- Otherwise, respond in 2-4 short sentences.',
+  'Keep it concise and practical.',
+  'Avoid long paragraphs and unnecessary prefaces.',
+].join('\n');
 
-export function ChatView({ initialMessage, onBack }) {
+export function ChatView({ initialMessage = '', welcomeMessage = '', onClose }) {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState(initialMessage || '');
   const [loading, setLoading] = useState(false);
@@ -38,19 +53,12 @@ export function ChatView({ initialMessage, onBack }) {
   };
   const didSendInitial = useRef(false);
 
-useEffect(() => {
-  if (initialMessage && !didSendInitial.current) {
-    didSendInitial.current = true;
-    sendMessage(initialMessage);
-  }
-}, [initialMessage]);
-
-  // useEffect(() => {
-  //   if (initialMessage) {
-  //     sendMessage(initialMessage);
-  //   }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, []);
+  useEffect(() => {
+    if (initialMessage && !didSendInitial.current) {
+      didSendInitial.current = true;
+      sendMessage(initialMessage);
+    }
+  }, [initialMessage]);
 
   useEffect(() => {
     if (listRef.current) {
@@ -58,17 +66,23 @@ useEffect(() => {
     }
   }, [messages, loading]);
 
+  const displayMessages = welcomeMessage
+    ? [{ role: 'assistant', content: welcomeMessage, key: 'welcome' }, ...messages]
+    : messages;
+
   return (
     <div className="chatbot glass-card chatview">
       <div className="recipes-header">
         <h3>AI Chat</h3>
-        <button type="button" className="btn-secondary" onClick={onBack}>
-          Back
-        </button>
+        {onClose && (
+          <button type="button" className="btn-secondary" onClick={onClose}>
+            Close
+          </button>
+        )}
       </div>
       <div className="chatbot-messages" ref={listRef}>
-        {messages.map((msg, index) => (
-          <div key={`${msg.role}-${index}`} className={`chatbot-bubble ${msg.role}`}>
+        {displayMessages.map((msg, index) => (
+          <div key={msg.key || `${msg.role}-${index}`} className={`chatbot-bubble ${msg.role}`}>
             {msg.content}
           </div>
         ))}
@@ -80,9 +94,10 @@ useEffect(() => {
           placeholder="Ask a cooking question..."
           value={input}
           onChange={(e) => setInput(e.target.value)}
+          autoFocus
         />
         <button type="submit" className="icon-button" disabled={!input.trim() || loading}>
-          <span className="icon-arrow">?</span>
+          <span className="icon-arrow">&gt;</span>
         </button>
       </form>
     </div>

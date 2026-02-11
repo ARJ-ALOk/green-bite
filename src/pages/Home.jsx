@@ -1,7 +1,6 @@
 import { IngredientSelector } from '../components/IngredientSelector';
 import { GenerateButton } from '../components/GenerateButton';
 import { FiltersBar } from '../components/FiltersBar';
-import { ChatBot } from '../components/ChatBot';
 
 export function HomePage({
   selectedIngredients,
@@ -26,7 +25,6 @@ export function HomePage({
         loading={loading}
         disabled={loading || selectedIngredients.length === 0}
       />
-      <ChatBot />
       {error && <p className="error">{error}</p>}
     </main>
   );

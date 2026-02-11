@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { HomePage } from './pages/Home';
 import { FavoritesPage } from './pages/Favorites';
 import { RecipesView } from './pages/RecipesView';
+import { ChatBot } from './components/ChatBot';
 import { getRecipesFromIngredients } from './services/groqService';
 import { useLocalStorage } from './hooks/useLocalStorage';
 import apple from './assets/ingredients/apple.png';
@@ -156,6 +157,9 @@ function App() {
     if (!el) return;
 
     let raf = 0;
+    let pulseTimer = 0;
+    const canHover = window.matchMedia('(hover: hover)').matches;
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     const update = (evt) => {
       const scrollY = window.scrollY || window.pageYOffset || 0;
@@ -182,21 +186,32 @@ function App() {
     };
 
     const onClick = () => {
+      if (reduceMotion) return;
       el.classList.remove('bg-field--pulse');
-      void el.offsetWidth;
-      el.classList.add('bg-field--pulse');
+      requestAnimationFrame(() => {
+        el.classList.add('bg-field--pulse');
+      });
+      if (pulseTimer) window.clearTimeout(pulseTimer);
+      pulseTimer = window.setTimeout(() => {
+        el.classList.remove('bg-field--pulse');
+      }, 600);
     };
 
     update();
     window.addEventListener('scroll', onScroll, { passive: true });
-    window.addEventListener('mousemove', onMove, { passive: true });
+    if (canHover) {
+      window.addEventListener('mousemove', onMove, { passive: true });
+    }
     window.addEventListener('click', onClick);
 
     return () => {
       window.removeEventListener('scroll', onScroll);
-      window.removeEventListener('mousemove', onMove);
+      if (canHover) {
+        window.removeEventListener('mousemove', onMove);
+      }
       window.removeEventListener('click', onClick);
       if (raf) cancelAnimationFrame(raf);
+      if (pulseTimer) window.clearTimeout(pulseTimer);
     };
   }, []);
 
@@ -277,6 +292,7 @@ function App() {
           />
         )}
       </div>
+      <ChatBot />
     </>
   );
 }
