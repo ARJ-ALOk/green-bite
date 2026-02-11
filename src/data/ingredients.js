@@ -1,0 +1,15 @@
+export const COMMON_INGREDIENTS = [
+  'Tomato', 'Onion', 'Garlic', 'Potato', 'Carrot', 'Bell Pepper',
+  'Spinach', 'Broccoli', 'Lemon', 'Lime', 'Egg', 'Chicken',
+  'Rice', 'Pasta', 'Flour', 'Olive Oil', 'Butter', 'Milk',
+  'Cheese', 'Paneer', 'Yogurt', 'Beans', 'Lentils', 'Coconut',
+  'Ginger', 'Turmeric', 'Cumin', 'Paprika', 'Coriander', 'Chili',
+  'Soy Sauce', 'Vinegar', 'Oregano', 'Basil', 'Cilantro', 'Mint',
+  'Mushroom', 'Cucumber', 'Avocado', 'Banana', 'Apple', 'Corn',
+  'Peas', 'Green Beans', 'Cauliflower', 'Zucchini', 'Eggplant',
+  'Sweet Potato', 'Pumpkin', 'Beetroot', 'Cabbage', 'Lettuce',
+  'Bread', 'Oats', 'Almonds', 'Peanut Butter', 'Honey', 'Sugar',
+  'Salt', 'Black Pepper', 'Tomato Sauce', 'Cream', 'Cheddar',
+  'Mozzarella', 'Feta', 'Chickpeas', 'Kidney Beans', 'Quinoa',
+  'Tofu', 'Fish', 'Shrimp', 'Beef', 'Pork', 'Mayo', 'Mustard',
+];
